@@ -1,0 +1,19 @@
+{
+  "name": "webTemp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "polo",
+  "license": "MIT",
+  "dependencies": {
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.24.1",
+    "koa": "^2.3.0",
+    "koa-body": "^2.3.0",
+    "koa-compress": "^2.0.0",
+    "koa-router": "^7.2.1",
+    "koa-session": "^5.5.0",
+    "koa-static": "^4.0.1",
+    "mysql": "^2.14.1",
+    "uuid": "^3.1.0"
+  }
+}
