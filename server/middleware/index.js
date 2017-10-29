@@ -1,3 +1,8 @@
-import csrf from './csrf/koa-best-csrf'
+const { middlewarePath } = require('../../config');
+const loadOwnModules = require('../../libraries/loadOwnModules');
 
-export default {csrf};
+const middleware = {};
+
+loadOwnModules(middlewarePath, middleware);
+
+module.exports = middleware;

@@ -1,0 +1,47 @@
+:global(body) {
+  margin: 0;
+}
+
+:global(html) {
+  margin: 0
+}
+
+:global(a) {
+  cursor: pointer;
+}
+
+:global(ul) {
+  margin: 0;
+}
+
+:global(.fade-enter) {
+  opacity: 0;
+}
+
+:global(.fade-enter-active) {
+  transition: opacity .3s linear;
+  opacity: 1;
+}
+
+:global(.fade-exit) {
+  transition: transform .2s linear;
+  opacity: 1;
+}
+
+:global(.fade-exit-active) {
+  opacity: 0;
+}
+
+.page-main {
+  position: relative;
+  width: 100%;
+  margin: 0px auto;
+}
+
+.page-main-inner {
+  position: absolute;
+  width: 100%;
+  top:0;
+  left:0;
+  padding:80px 20px 20px 20px;
+}

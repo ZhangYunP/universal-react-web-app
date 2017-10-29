@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible"  content="IE=edgechrome=1" />
+  <link rel="apple-touch-icon" sizes="114x114" href="${input.version}/dist/images/iconImage/apple-icon-114x114.png" />
+  <link rel="icon"  type="image/png" sizes="192x192"  href="${input.version}/dist/images/iconImage/android-icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="${input.version}/dist/images/iconImage/favicon-16x16.png" />
+  <link rel="manifest"  href="manifest.json" />
+  <meta name="msapplication-TileColor"  content="#ffffff" />
+  <meta name="msapplication-TileImage"  content="${input.version}/dist/images/iconImage/ms-icon-144x144.png" />
+  <meta name="theme-color"  content="#ffffff" />
+  <meta name="description" content="This is a web app demo" />
+  <meta name="author" content="Polo Zhang" />
+  <title>首页</title>
+  $!{input.ogmeta}
+</head>
+<body>
+  <noscript>
+      你需要允许JavaScript在你的浏览器上运行！
+  </noscript>
+  <script>
+    window.__INITIAL_STATE__=${input.initialState}
+  </script>
+  <div id="root">
+    $!{input.markup}
+  </div>
+  <if(input.env === 'development')>
+    <script src='reload/reload.js'></script>
+  </if>
+</body>
+</html>

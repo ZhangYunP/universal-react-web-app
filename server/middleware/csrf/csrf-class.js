@@ -1,6 +1,6 @@
-import crypto from 'crypto';
+const crypto = require('crypto');
 
-export default class Csrf {
+class Csrf {
   constructor(opts) {
     this.opts = opts;
     this.secret = this.opts.secret;
@@ -38,3 +38,4 @@ export default class Csrf {
   }
 
 }
+module.exports = Csrf;

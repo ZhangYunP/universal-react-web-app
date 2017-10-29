@@ -1,8 +1,18 @@
 {
   "presets": [["env" , {
       "targets" : {
-        "node" : "current"
-      },
-      "useBuiltIns" : true
-    }]]
+        "node": "current"
+      }
+    }], "react", "stage-2"],
+  "plugins": [["react-css-modules", {
+    "handleMissingStyleName": "ignore",
+    "removeImport": true
+  }]],
+  "env": {
+    "development": {
+      "plugins": [
+        "react-hot-loader/babel"
+      ]
+    }
+  }
 }

@@ -1,0 +1,8 @@
+.page-home{
+  height: 2000px;
+  position: relative;
+}
+.btn-back-top{
+  position: absolute;
+  bottom: 0
+}

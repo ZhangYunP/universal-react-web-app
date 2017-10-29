@@ -1,0 +1,52 @@
+.navbar-nav-section,.navbar-logo-section{
+  display: inline-block;
+  float: left;
+}
+
+.navbar-nav-section{
+  margin-left: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.navbar-banner{
+  position: relative;
+  display: inline-block;
+  height: 100%;
+}
+
+.navbar-banner img{
+  position: absolute;
+  background-size: cover;
+}
+
+.navbar-word{
+  font-size: 20px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+.navbar-nav{
+  position: relative;
+}
+
+.navbar-nav-section .nav-ul{
+  -webkit-padding-start: 0px;
+}
+
+.nav-li{
+  display: inline-block;
+  list-style: none;
+  margin-right: 20px;
+}
+
+.navbar-link{
+  text-decoration: none;
+  display: inline-block;
+  color: #241D1D;
+}
+
+.navbar-active-bar{
+  display: inline-block;
+  position: absolute;
+}
