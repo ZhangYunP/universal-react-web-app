@@ -1,6 +1,5 @@
-import 'isomorphic-fetch';
 import * as ActionTypes from '../../constants';
-
+/* eslint quotes: 0 */
 const initialState = {
   data: {},
   err: ''
@@ -8,28 +7,15 @@ const initialState = {
 
 export default function asyncFetchData(state = initialState, action) {
   switch (action.type) {
-    case ActionTypes.FETCHSUCESS:
+    case ActionTypes.FETCH_SUCESS:
       return Object.assign({}, state, { data: action.data });
-    case ActionTypes.FETCHERROR:
+    case ActionTypes.FETCH_ERROR:
       return Object.assign({}, state, { err: action.err });
     default:
       return state;
   }
 }
 
-export const asyncFetchDataActionCreator = () => dispatch => {
-  return fetch('https://route.showapi.com/1438-2', { mode: 'cors' })
-    .then(res => res.json())
-    .then(json => {
-      dispatch({
-        type: ActionTypes.FETCHSUCESS,
-        data: json
-      });
-    })
-    .catch(e => {
-      dispatch({
-        type: ActionTypes.FETCHERROR,
-        err: e
-      });
-    });
-};
+export const startFetch = () => ({
+  type: ActionTypes.FETCH_START
+});

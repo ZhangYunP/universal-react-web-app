@@ -1,0 +1,16 @@
+{
+  "javascript": {
+    "vendor": "/v1/dist/js/vendor.js",
+    "index": "/v1/dist/js/index.js",
+    "manifest": "/v1/dist/js/manifest.js"
+  },
+  "styles": {
+    "index": "/v1/dist/css/index.css"
+  },
+  "assets": {
+    "./client/containers/header/navbar/logo.png": "/v1\\dist\\images\\logo.b0efdaf6c6.png"
+  },
+  "webpack": {
+    "version": "3.5.5"
+  }
+}

@@ -1,4 +1,10 @@
 {
   "verbose": true,
-  "ignore": ["public/*", "logs/*", "upload/*", "client/*", "views/*"]
+  "ignore": ["node_modules", ".git"],
+  "watch": ["server", "libraries", "utilities", "app.js", "index.js", "serverStart.js",
+  "config.js", "views/src", "client/redux/configureStore.js"],
+  "ext": "js jsx json marko",
+  "env": {
+      "NODE_ENV": "development"
+    }
 }

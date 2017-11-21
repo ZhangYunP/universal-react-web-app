@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-const args = require('yargs').argv;
 const vendors = require('../config').webpackVendors;
 
 module.exports = {

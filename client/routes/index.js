@@ -1,4 +1,4 @@
-import Root from '../containers/layout';
+import Root from '../containers/root';
 import Home from '../containers/home';
 import First from '../containers/firstPage';
 import Second from '../containers/secondPage';
@@ -16,18 +16,22 @@ const routes = [
       },
       {
         path: '/home',
+        exact: true,
         component: Home
       },
       {
         path: '/one',
+        exact: true,
         component: First
       },
       {
         path: '/two',
+        exact: true,
         component: Second
       },
       {
         path: '/three',
+        exact: true,
         component: Thrid
       },
       {

@@ -20,12 +20,10 @@ export default function counter(state = initialState, action) {
 }
 
 export function counterActionCreator(type, number1, number2) {
-  return dispatch => {
-    type = `@${ActionTypes.projectName}/counter/${type}`;
-    dispatch({
-      type,
-      number1,
-      number2
-    });
+  type = `@@${ActionTypes.projectName}/counter/${type}`;
+  return {
+    type,
+    number1,
+    number2
   };
 }

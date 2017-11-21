@@ -1,17 +1,11 @@
-const { EventEmitter } = require('events');
-const { poolOptions } = require('./config');
-const connectPool = require('./server/core/dbpool');
-const initializeServer = require('./server/core/initServer');
-const handleUncaughtException = require('./server/core/uncaughtException');
+const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
 
-const ev = new EventEmitter();
+const projectBasePath = require('./config').projectBasePath;
 
-handleUncaughtException();
+const webpackIsomorphicToolsConfig = require('./webpackConfig/webpack-isomorphic-tools-configuration');
 
-ev.on('db-ready', (pool, isCluster) => {
-  initializeServer(pool, isCluster);
+global.webpackIsomorphicTools = new WebpackIsomorphicTools(webpackIsomorphicToolsConfig)
+.server(projectBasePath, function() {
+  // this is back end server entry
+  require('./serverStart');
 });
-
-connectPool(poolOptions, ev);
-
-ev.emit('boot-ready');

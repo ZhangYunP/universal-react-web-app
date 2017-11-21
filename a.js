@@ -159,19 +159,36 @@
 // app.listen(3030, () => {
 //   console.log('server listen on 3030');
 // })
-const serve = require('./server/middleware/staticserver');
-const Koa = require('koa');
-const fs = require('fs');
-const app = new Koa();
-const Router = require('koa-router');
-const router = new Router();
-// or use absolute paths
-app.use(serve({root: __dirname + '/public', cache: 1110000} ));
-router.get('/', ctx => {
-  ctx.type = 'html';
-  ctx.body = fs.readFileSync('./a.html');
-});
-app.use(router.routes(), router.allowedMethods());
-app.listen(3000);
+// const serve = require('./server/middleware/staticserver');
+// const Koa = require('koa');
+// const fs = require('fs');
+// const app = new Koa();
+// const Router = require('koa-router');
+// const router = new Router();
+// // or use absolute paths
+// app.use(serve({root: __dirname + '/public', cache: 1110000} ));
+// router.get('/', ctx => {
+//   ctx.type = 'html';
+//   ctx.body = fs.readFileSync('./a.html');
+// });
+// app.use(router.routes(), router.allowedMethods());
+// app.listen(3000);
 
-console.log('listening on port 3000');
+// console.log('listening on port 3000');
+/* eslint  no-cond-assign: 0 */
+function upperCase(name, joiner = '_', ignore = '/') {
+  let result = '';
+  let upper;
+  for (let char of name) {
+    upper = char.toUpperCase();
+    if (upper === char && char !== ignore) {
+      char = joiner + char;
+    } else {
+      char = upper;
+    }
+    result += char;
+  }
+  return result;
+}
+
+console.log(upperCase('abc/casc/cdaEcv'));

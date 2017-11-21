@@ -7,9 +7,9 @@ const initialState = {
 
 export default function ensureNumber(state = initialState, action) {
   switch (action.type) {
-    case ActionTypes.ENSUREFIRSTNUMBER:
+    case ActionTypes.ENSURE_FIRST_NUMBER:
       return Object.assign({}, state, { one: action.number });
-    case ActionTypes.ENSURESECONDNUMBER:
+    case ActionTypes.ENSURE_SECOND_NUMBER:
       return Object.assign({}, state, { two: action.number });
     default:
       return state;
@@ -17,11 +17,9 @@ export default function ensureNumber(state = initialState, action) {
 }
 
 export function ensureNumberActionCreator(number, isFirst) {
-  return dispatch => {
-    const type = isFirst ? ActionTypes.ENSUREFIRSTNUMBER : ActionTypes.ENSURESECONDNUMBER;
-    return dispatch({
-      type,
-      number
-    });
+  const type = isFirst ? ActionTypes.ENSURE_FIRST_NUMBER : ActionTypes.ENSURE_SECOND_NUMBER;
+  return {
+    type,
+    number
   };
 }

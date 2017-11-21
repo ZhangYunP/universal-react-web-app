@@ -1,34 +1,54 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Nav from './nav';
 import NavLogoContainer from './navLogoContainer';
 import ActiveBar from './activeBar';
-import { toggleShowStateActionCreator } from '../../../redux/modules/toggleShowState';
+import { mapState } from '../../../redux/modules/toggleShowState';
 import './navbar.css';
 /* eslint max-len: ["error", 200] */
+/* eslint no-nested-ternary: 0 */
 
 class Navbar extends Component {
   constructor(props) {
     super(props);
-    const { Height, Width, logoPadding } = this.props;
-    this.activeLinkColor = '#00AAFF';
+    const { Height, logoWidth, logoPadding } = this.props;
     this.linkColor = '#000';
-    this.Width = parseInt(Width, 10);
+    this.activeBarHeight = 2;
+    this.defaultLocation = 'HOME';
+    this.activeLinkColor = '#00AAFF';
+    this.logoWidth = parseInt(logoWidth, 10);
     this.Height = parseInt(Height, 10);
-    this.logoImgWidth = (this.Width - parseInt(logoPadding, 10)) + 'px';
+    this.logoImgWidth = (this.logoWidth - parseInt(logoPadding, 10)) + 'px';
     this.logoImgHeight = (this.Height - parseInt(logoPadding, 10)) + 'px';
     this.logoImgPos = (parseInt(logoPadding, 10) / 2) + 'px';
-    this.activeBarHeight = 2;
-    this.navbarSectionHeight = this.Height + this.activeBarHeight;
-    this.handleActiveBar = this.handleActiveBar.bind(this);
+    this.activeBarTop = this.Height - this.activeBarHeight;
   }
 
-  handleActiveBar(e, showType, index) {
-    const left = e.target.offsetLeft;
-    const width = e.target.offsetWidth;
-    const { toggleShowState } = this.props;
-    toggleShowState(showType, left, width, index);
+  static propTypes = {
+    show: PropTypes.bool,
+    index: PropTypes.number,
+    leftPos: PropTypes.number,
+    width: PropTypes.number,
+    finalPos: PropTypes.number,
+    finalWidth: PropTypes.number,
+    title: PropTypes.string,
+    Height: PropTypes.string,
+    logoWidth: PropTypes.string,
+    logoPadding: PropTypes.string,
+    navLinkFontSize: PropTypes.string,
+    navLinkMap: PropTypes.arrayOf(PropTypes.shape({
+      path: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    }))
+  }
+
+  static defaultProps = {
+    Height: '55px',
+    logWidth: '55px',
+    logoPadding: '10px',
+    navLinkFontSize: '16px',
+    show: false
   }
 
   render() {
@@ -41,11 +61,14 @@ class Navbar extends Component {
       show,
       index,
       leftPos,
-      barWidth,
+      width,
       finalPos,
       finalWidth,
-      fromStorage
+      locationPos,
+      locationWidth,
+      isFirst
     } = this.props;
+
     return (
       <div styleName='navbar-main'>
         <NavLogoContainer
@@ -53,12 +76,12 @@ class Navbar extends Component {
           navLogo={navLogo}
           lineHeight={Height}
           height={this.Height}
-          width={this.Width}
+          width={this.logoWidth}
           logoImgPos={this.logoImgPos}
           logoImgWidth={this.logoImgWidth}
           logoImgHeight={this.logoImgHeight}
         />
-        <div styleName='navbar-nav-section' style={{ height: this.navbarSectionHeight }}>
+        <div styleName='navbar-nav-section' style={{ height: this.Height }}>
           <Nav
             navLinkFontSize={navLinkFontSize}
             lineHeight={Height}
@@ -67,18 +90,17 @@ class Navbar extends Component {
             activedIndex={index}
             linkColor={this.linkColor}
             activeLinkColor={this.activeLinkColor}
-            handleActiveBar={this.handleActiveBar}
           />
           <ActiveBar
             style={{
               height: this.activeBarHeight,
-              top: this.Height,
+              top: this.activeBarTop,
               backgroundColor: this.activeLinkColor,
-              width: fromStorage ? finalWidth : null,
-              transform: fromStorage ? `matrix(1, 0, 0, 1, ${finalPos}, 0)` : null
+              width: isFirst ? locationWidth : finalWidth,
+              left: isFirst ? locationPos : 0
             }}
             show={show}
-            animates={{ etlf: { x: leftPos || 0, width: barWidth }, eflt: { x: finalPos || 0, width: finalWidth || 0 } }}
+            animates={{ etlf: { x: leftPos || 0, width }, eflt: { x: finalPos || 0, width: finalWidth || 0 } }}
           />
         </div>
       </div>
@@ -86,24 +108,14 @@ class Navbar extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    show: state.toggleShowState.show,
-    index: state.toggleShowState.index,
-    leftPos: state.toggleShowState.leftPos,
-    barWidth: state.toggleShowState.width,
-    finalPos: state.toggleShowState.finalPos,
-    finalWidth: state.toggleShowState.finalWidth,
-    fromStorage: state.toggleShowState.fromStorage
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    ...bindActionCreators({
-      toggleShowState: toggleShowStateActionCreator
-    }, dispatch)
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Navbar);
+export default connect(mapState([
+  'show',
+  'index',
+  'leftPos',
+  'width',
+  'isFirst',
+  'finalPos',
+  'finalWidth',
+  'locationPos',
+  'locationWidth'
+]))(Navbar);

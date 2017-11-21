@@ -25,13 +25,13 @@ function render(input, out) {
     marko_escapeXmlAttr(input.version) +
     "/dist/images/iconImage/ms-icon-144x144.png\"><meta name=\"theme-color\" content=\"#ffffff\"><meta name=\"description\" content=\"This is a web app demo\"><meta name=\"author\" content=\"Polo Zhang\"><title>首页</title>" +
     marko_str(input.ogmeta) +
-    "</head><body>");
+    "<link href=\"/v1/dist/css/index.css\" rel=\"stylesheet\"></head><body>");
 
   component_globals_tag({}, out);
 
-  out.w("<noscript>你需要允许JavaScript在你的浏览器上运行！</noscript><script>\n    window.__INITIAL_STATE__=" +
+  out.w("<noscript>你需要允许JavaScript在你的浏览器上运行!!!</noscript><script>\r\n    window.__INITIAL_STATE__=" +
     marko_escapeScript(input.initialState) +
-    "\n  </script><div id=\"root\">" +
+    "\r\n  </script><div id=\"root\">" +
     marko_str(input.markup) +
     "</div>");
 

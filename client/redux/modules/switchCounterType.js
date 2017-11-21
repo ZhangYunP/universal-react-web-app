@@ -6,7 +6,7 @@ const initialState = {
 
 export default function switchCounterType(state = initialState, action) {
   switch (action.type) {
-    case ActionTypes.SWITCHTYPE:
+    case ActionTypes.SWITCH_TYPE:
       return Object.assign({}, state, { method: action.method });
     default:
       return state;
@@ -14,10 +14,8 @@ export default function switchCounterType(state = initialState, action) {
 }
 
 export function switchCounterTypeActionCreator(method) {
-  return dispatch => {
-    return dispatch({
-      type: ActionTypes.SWITCHTYPE,
-      method
-    });
+  return {
+    type: ActionTypes.SWITCH_TYPE,
+    method
   };
 }

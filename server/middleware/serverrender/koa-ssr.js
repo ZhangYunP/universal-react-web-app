@@ -4,45 +4,50 @@ const { Helmet } = require('react-helmet');
 const serialize = require('serialize-javascript');
 const { renderToString } = require('react-dom/server');
 const { StaticRouter } = require('react-router-dom');
-import { AppContainer } from 'react-hot-loader';
 const { matchRoutes, renderRoutes } = require('react-router-config');
 const { version } = require('../../../config');
 const { createCustomError } = require('../../../libraries/errorFactory');
 const routes = require('../../../client/routes').default;
 const configureStore = require('../../../client/redux/configureStore').default;
 /* eslint max-len: 0 */
+
 const env = process.env.NODE_ENV || 'development';
 const store = configureStore();
 
 function serverRender(template) {
   return async (ctx, next) => {
+    if (env !== 'production') webpackIsomorphicTools.refresh(); // delete cache
     const branch = matchRoutes(routes, ctx.url);
-    const promises = branch.map(({ route }) => {
-      const fetchdata = route.component.fetchdata;
-      return typeof fetchdata === 'function' ? fetchdata(store) : Promise.resolve(null);
+
+    const sagaPromises = branch.map(({ route }) => {
+      const fetchSaga = route.component.componentWillFetch;
+      if (fetchSaga) {
+        let fetchTask = store.runSaga(fetchSaga());
+        return fetchTask.done;
+      }
+      return Promise.resolve();
     });
-    const data = await Promise.all(promises);
+
+    await Promise.all(sagaPromises);
+
     const context = {};
-    const Component = env === 'development'
-      ? (
-        <AppContainer>
-          <Provider store={store}>
-            <StaticRouter context={context} location={ctx.url}>
-              {renderRoutes(routes)}
-            </StaticRouter>
-          </Provider>
-        </AppContainer>
-      )
-      : (
-        <Provider store={store}>
-          <StaticRouter context={context} location={ctx.url}>
-            {renderRoutes(routes)}
-          </StaticRouter>
-        </Provider>
-      );
-    const markup = renderToString(Component);
+
+    const PageComponent = (
+      <Provider store={store}>
+        <StaticRouter context={context} location={ctx.url}>
+          {renderRoutes(routes)}
+        </StaticRouter>
+      </Provider>
+    );
+
+    const markup = renderToString(PageComponent);
+
+    store.close();
+
     const helmet = Helmet.renderStatic();
+
     const ogmeta = helmet.meta.toString();
+
     if (context.status === 404) {
       ctx.status = 404;
     } else if (context.status === 302) {
@@ -63,4 +68,5 @@ function serverRender(template) {
     }
   };
 }
+
 exports.serverRender = serverRender;

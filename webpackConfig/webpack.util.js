@@ -3,14 +3,17 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
+const HappyPack = require('happypack');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const InlineChunkManifestHtmlWebpackPlugin = require('inline-chunk-manifest-html-webpack-plugin');
-// const HtmlWebpackPugPlugin = require('../utilities/html-webpack-pug-plugin');
 const templateDiskPath = require('../config').templateDiskPath;
 const templateInject = require('../config').templateInject;
+const cssPath = require('../config').cssPath;
+const publicPath = require('../config').publicPath;
 const useLocal = process.env.npm_config_islocal || false;
 /* eslint max-len: ["error", 200] */
 const prefix = /^UNIVERSAL_REACT_WEB_APP_/i;
+const happyThreadPool = HappyPack.ThreadPool({ size: 4 });
 
 exports.webpackMap = {
   css: /\.css(\?(.*?))?$/,
@@ -24,18 +27,24 @@ exports.webpackMap = {
   svg: /\.svg(\?(.*?))?$/
 };
 
-exports.createLoader = (options = {}, extractCSS) => {
+exports.createRules = (options = {}, extractCSS, env = 'production') => {
   if (typeof options.test === 'string') options.test = exports.webpackMap[options.test];
-  if (!(options.test instanceof RegExp)) throw new Error('test must be RegExp');
   if (!options.use) throw new Error('use must be exists');
   if (!Array.isArray(options.use)) options.use = [options.use];
   if (options.test.test('.css') || options.test.test('.less') || options.test.test('.sass') || options.test.test('.scss')) {
     if (extractCSS) {
       const extractLoader = {
-        use: options.use,
-        fallback: 'style-loader'
+        fallback: 'style-loader',
+        use: options.use
       };
       options.use = extractCSS.extract(extractLoader);
+      if (env === 'development') {
+        options.use = ['css-hot-loader'].concat(options.use); // in development, extracttextplugin
+                                                              // can not hot reload style, because
+                                                              // css text has be extracted into .css
+                                                              // file, so I use css-hot-loader to
+                                                              // hot reload css with extracttextplugin
+      }
     }
   }
   return ({
@@ -45,11 +54,13 @@ exports.createLoader = (options = {}, extractCSS) => {
   });
 };
 
-exports.createExtractCss = (filename, env = 'development') => {
+exports.createExtractCss = (options) => {
   const extractCSS = new ExtractTextPlugin({
-    filename,
-    disable: env === 'development',
-    allChunks: true
+    filename: options.filename || cssPath,
+    allChunks: options.allChunks || false,
+    // when use commonchunksplugin and these common chunks had extract 
+    // css from ExtractTextPlugin.extract, allChunks must be true
+    publicPath: options.publicPath || publicPath
   });
   return extractCSS;
 };
@@ -85,7 +96,7 @@ exports.createHtmlWebpackPlugin = (options = {
   const htmlPlugins = [];
   const htmlConfig = Object.assign({
     inject: templateInject,
-    alwaysWriteToDisk: (env === 'development' && useLocal),
+    alwaysWriteToDisk: env === 'development',
     showErrors: env === 'development'
   }, options.htmlConfig);
 
@@ -99,7 +110,7 @@ exports.createHtmlWebpackPlugin = (options = {
 
   htmlPlugins.push(webpackhtmlplugin, scriptexthtmlplugin, preloadwebpackplugin);
 
-  if (env === 'development' && useLocal) {
+  if (env === 'development') {
     const diskConfig = Object.assign({
       outputPath: templateDiskPath
     }, options.diskConfig);
@@ -194,3 +205,14 @@ exports.useHot = function (hotEntry) {
   }
   return false;
 };
+
+exports.createHappyPlugin = function(id, loaders) {
+  return new HappyPack({
+    id: id,
+    loaders: loaders,
+    threadPool: happyThreadPool,
+
+    // make happy more verbose with HAPPY_VERBOSE=1
+    verbose: process.env.HAPPY_VERBOSE === '1',
+  });
+}

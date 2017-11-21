@@ -82,24 +82,19 @@ exports.indexPage = 'index.html';
  * webpack config
  */
 exports.postcssPath = path.join(__dirname, 'webpackConfig/postcss.config.js');
-exports.imagesPath = 'src/images';
-exports.fontsPath = 'src/fonts';
-exports.mediaPath = 'src/media';
+exports.imagesPath = exports.version + '/dist/images';
+exports.fontsPath = exports.version + '/dist/fonts';
+exports.mediaPath = exports.version + '/dist/media';
+exports.cssPath = exports.version + '/dist/css';
 exports.entryPath = path.join(__dirname, 'client/index.js');
 exports.devPublicPath = '/';
 exports.publicPath = 'localhost';
 exports.outputPath = exports.publicDir;
-exports.cssPath = 'src/css';
-exports.templateFile = path.join(__dirname, 'views/src/index.marko');
+exports.templateFile = path.join(__dirname, 'views/src/source.marko');
 exports.templateDiskPath = exports.viewsPath;
 exports.templateInject = true;
 exports.nodeModulesPath = path.join(__dirname, 'node_modules');
 exports.shouldUseSourceMap = true;
-exports.hotEntry = [
-  'eventsource-polyfill',
-  'react-hot-loader/patch',
-  'webpack-hot-middleware/client?reload=true'
-];
 exports.webpackVendors = ['react', 'react-dom', 'react-router', 'react-transition-group'];
 exports.extractWebpackRuntime = 'file';
 exports.htmlWebpackPluginConfig = {
@@ -122,6 +117,8 @@ exports.htmlWebpackPluginConfig = {
     include: 'asyncChunks' // ['home'], 'all'
   }
 };
+exports.projectBasePath = path.join(__dirname);
+exports.webpackAssetsPath = path.join(__dirname, 'webpackConfig/webpack-assets.json');
 /*
 csrf config
  */

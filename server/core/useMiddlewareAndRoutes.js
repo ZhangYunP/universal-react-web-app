@@ -4,7 +4,8 @@ const koaBody = require('koa-body');
 const helmet = require('koa-helmet');
 const session = require('koa-session');
 const compress = require('koa-compress');
-const middleware = require('../../server/middleware');
+const middleware = require('../middleware');
+const installRouter = require('./installRouter');
 const { createpkp } = require('../../libraries/vendor');
 const {
   publicDir, compressType, compressThreshold, maxFieldsSize, uploadDir,
@@ -26,7 +27,9 @@ const {
   koadevserver
 } = middleware;
 
-function installMiddleware(app, router, apiRouter) {
+function useMiddlewareAndRoutes(app, router, dbOperationCollection) {
+  if (env === 'development') app.use(koadevserver(app, router, dbOperationCollection)); // webpack dev server
+
   app.use(dispatcherror());
 
   app.use(recordaccessinfo({}));
@@ -44,11 +47,9 @@ function installMiddleware(app, router, apiRouter) {
     }));
   }
 
-  if (env === 'development') app.use(koadevserver());
-
-  app.use(staticserver({ root: publicDir, cache: { image: 1100000, javascript: 1100000 } }));
   // when you enter the location bar, the browser will set request header cache-control: max-age=0
   // and froce browser to request the assert
+  app.use(staticserver({ root: publicDir, cache: { image: 1100000, javascript: 1100000 } }));
 
   app.use(session(app, {}));
 
@@ -72,8 +73,9 @@ function installMiddleware(app, router, apiRouter) {
     flush: zlib.Z_SYNC_FLUSH
   }));
 
-  router.use(apiRouter.routes(), apiRouter.allowedMethods());
-
-  app.use(router.routes(), router.allowedMethods());
+  if (env !== 'development') {
+    installRouter(app, router, dbOperationCollection);
+  }
 }
-module.exports = installMiddleware;
+
+module.exports = useMiddlewareAndRoutes;

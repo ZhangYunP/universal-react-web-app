@@ -1,8 +1,8 @@
 import React from 'react';
-import OgMeta from '../ogMeta';
+import OgMeta from '../helper/ogMeta';
 import Navbar from './navbar';
 import navLinkMap from './navLinkMap';
-// import navImg from './navbar/logo.png';
+import navImg from './navbar/logo.png';
 import './header.css';
 
 const Header = ({ style, navbarSize, ...rest }) => {
@@ -11,10 +11,10 @@ const Header = ({ style, navbarSize, ...rest }) => {
       <Navbar
         navLinkMap={navLinkMap}
         title='demo'
-        // navLogo={navImg}
-        Width={navbarSize}
         Height={navbarSize}
         navLinkFontSize='16px'
+        navLogo={navImg}
+        logoWidth={navbarSize}
         logoPadding='15px'
       />
       <OgMeta />

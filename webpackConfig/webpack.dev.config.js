@@ -5,7 +5,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const createLoader = require('./webpack.util').createLoader;
+const createRules = require('./webpack.util').createRules;
 const useHot = require('./webpack.util').useHot;
 const createExtractCss = require('./webpack.util').createExtractCss;
 const extractCommonChunks = require('./webpack.util').extractCommonChunks;
@@ -16,17 +16,26 @@ const cssPath = require('../config').cssPath;
 const outputPath = require('../config').outputPath;
 const devPublicPath = require('../config').devPublicPath;
 const nodeModulesPath = require('../config').nodeModulesPath;
-
-let commonsChunkTemplate;
-let htmlWebpackPluginTemplate = {};
 const createWebpackBaseConfig = require('./webpack.common.config');
 /* eslint max-len: ["error", 200] */
 /* eslint no-param-reassign: 0 */
+const env = 'development';
+let commonsChunkTemplate;
+let htmlWebpackPluginTemplate = {};
 const baseConfigTemplate = createWebpackBaseConfig();
 
-const cssdevloader = createLoader({
+//if you do not extract css text into .css file, the ssr will cause
+//page flash. because, the entry script will inject style tag into
+//page head after backend return htmlstring(because style-loader)
+const extractCSS = createExtractCss({
+  filename: `${cssPath}/[name].css`,
+  allChunks: true,
+  publicPath: devPublicPath
+});
+
+const cssDevRule = createRules({
   test: 'css',
-  use: [require.resolve('style-loader'), {
+  use: [{
     loader: require.resolve('css-loader'),
     options: {
       modules: true,
@@ -34,7 +43,7 @@ const cssdevloader = createLoader({
       localIdentName: '[path]___[name]__[local]___[hash:base64:5]'
     }
   }]
-});
+}, extractCSS, env);
 
 exports.createWebpackdevConfig = (ownDevConfig, useDevServer, hotEntry, options = {}) => {
   if (typeof ownDevConfig === 'function') {
@@ -59,6 +68,7 @@ exports.createWebpackdevConfig = (ownDevConfig, useDevServer, hotEntry, options 
       publicPath: devPublicPath
     },
     plugins: [
+      extractCSS,
       new webpack.NamedModulesPlugin(),
       new CaseSensitivePathsPlugin(),
       new WatchMissingNodeModulesPlugin(nodeModulesPath),
@@ -89,12 +99,12 @@ exports.createWebpackdevConfig = (ownDevConfig, useDevServer, hotEntry, options 
   }
 
   if (useHot(hotEntry)) {
-    if (Array.isArray(hotEntry)) {
-      devConfigTemplate.entry.index.unshift(...hotEntry);
+    if (!useDevServer) {
+      devConfigTemplate.entry.index.unshift(require.resolve('./dev-client'));
     }
     const hmre = new webpack.HotModuleReplacementPlugin();
     devConfigTemplate.plugins.push(hmre);
   }
 
-  return merge(devConfigTemplate, baseConfigTemplate, cssdevloader, htmlWebpackPluginTemplate, (ownDevConfig || {}));
+  return merge(devConfigTemplate, baseConfigTemplate, cssDevRule, htmlWebpackPluginTemplate, (ownDevConfig || {}));
 };

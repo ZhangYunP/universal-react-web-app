@@ -3,9 +3,9 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const InlineChunkManifestHtmlWebpackPlugin = require('inline-chunk-manifest-html-webpack-plugin');
-var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
-const createLoader = require('./webpack.util').createLoader;
+const createRules = require('./webpack.util').createRules;
 const createExtractCss = require('./webpack.util').createExtractCss;
 const getCustomEnv = require('./webpack.util').getCustomEnv;
 const extractCommonChunks = require('./webpack.util').extractCommonChunks;
@@ -41,9 +41,13 @@ const htmlWebpackPluginTemplate = createHtmlWebpackPlugin({
   }
 });
 
-const extractCSS = createExtractCss(`${cssPath}/[name].[contenthash:8].css`, nodeEnv);
+const extractCSS = createExtractCss({
+  filename: `${cssPath}/[name].[contenthash:8].css`,
+  allChunks: true,
+  publicPath
+});
 
-const cssprodloader = createLoader({
+const cssProdRule = createRules({
   test: 'css',
   use: [
     {
@@ -65,30 +69,6 @@ const cssprodloader = createLoader({
     }
   ]
 }, extractCSS);
-
-const lessprodloader = createLoader({
-  test: 'less',
-  use: [
-    {
-      loader: require.resolve('css-loader'),
-      options: {
-        importLoaders: 1,
-        sourceMap: shouldUseSourceMap
-      }
-    },
-    {
-      loader: require.resolve('postcss-loader'),
-      options: {
-        config: {
-          path: postcssPath
-        }
-      }
-    },
-    require.resolve('less-loader')
-  ]
-}, extractCSS);
-
-const styleLoaders = merge(cssprodloader, lessprodloader);
 
 exports.createWebpackprodConfig = (ownProdConfig, options) => {
   const prodConfigTemplate = {
@@ -150,5 +130,5 @@ exports.createWebpackprodConfig = (ownProdConfig, options) => {
   };
   if (options.vendors) extractCommonChunks(prodConfigTemplate, options.vendors);
 
-  return merge(prodConfigTemplate, baseConfigTemplate, htmlWebpackPluginTemplate, styleLoaders, (ownProdConfig || {}));
+  return merge(prodConfigTemplate, baseConfigTemplate, htmlWebpackPluginTemplate, cssProdRule, (ownProdConfig || {}));
 };

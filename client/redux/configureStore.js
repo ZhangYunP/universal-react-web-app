@@ -1,24 +1,20 @@
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore, applyMiddleware, compose } from 'redux';
+import createSagaMiddleware, { END } from 'redux-saga';
 import { canUseDOM } from 'exenv';
-import { autoRehydrate, persistStore } from 'redux-persist';
-import { composeWithDevTools } from 'remote-redux-devtools';
+import { persistStore } from 'redux-persist';
+import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 import rootReducer from './modules';
-import { persistConfig } from './persistStore.config';
 
 const env = process.env.NODE_ENV || 'development';
 
-const middleware = [thunk];
-
 export default function configureStore(initState) {
-  const enhancerArgs = [
-    applyMiddleware(...middleware),
-    autoRehydrate()
-  ];
+  let persistor;
 
-  const composeEnhancers = composeWithDevTools({});
+  const sagaMiddleware = createSagaMiddleware();
 
-  const enhancer = composeEnhancers(...enhancerArgs);
+  const composeEnhancers = canUseDOM ? composeWithDevTools : compose;
+
+  const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware));
 
   const store = createStore(
     rootReducer,
@@ -27,9 +23,7 @@ export default function configureStore(initState) {
   );
 
   if (canUseDOM) {
-    persistStore(store, { ...persistConfig }, () => {
-      console.log('rehydration complete');
-    });
+    persistor = persistStore(store);
   }
 
   if (env === 'development' && module.hot) {
@@ -40,5 +34,14 @@ export default function configureStore(initState) {
     module.hot.accept('./modules', acceptCallback);
   }
 
-  return store;
+  const runSaga = sagaMiddleware.run;
+  const close = () => store.dispatch(END);
+
+  return {
+    persistor,
+    runSaga,
+    close,
+    ...store
+  };
 }
+

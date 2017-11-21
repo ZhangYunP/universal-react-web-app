@@ -1,16 +1,12 @@
-:global(body) {
+html,body {
   margin: 0;
 }
 
-:global(html) {
-  margin: 0
-}
-
-:global(a) {
+a {
   cursor: pointer;
 }
 
-:global(ul) {
+ul {
   margin: 0;
 }
 

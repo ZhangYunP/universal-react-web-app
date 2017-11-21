@@ -1,6 +1,11 @@
 const VError = require('verror');
-const { getTime } = require('./vendor');
+const moment = require('moment');
 /* eslint no-param-reassign: 0 */
+
+const getTime = () => {
+  return moment().format('DD/MM/YYYY:HH:mm:ss ZZ');
+}
+
 function createCustomError(e, name, meta, msg) {
   let customError = null;
   const errorOccuredTime = getTime();
@@ -55,4 +60,5 @@ function createCustomError(e, name, meta, msg) {
   }
   return customError;
 }
+
 exports.createCustomError = createCustomError;

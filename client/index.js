@@ -1,9 +1,9 @@
 import React from 'react';
 import { hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
+import { AppContainer } from 'react-hot-loader';
 import configureStore from './redux/configureStore';
 import App from './containers';
-import { AppContainer } from 'react-hot-loader';
 // import registerServiceWorker from './registerServiceWorker';
 
 const env = process.env.NODE_ENV || 'development';
@@ -12,7 +12,7 @@ const initialState = window.__INITIAL_STATE__;
 
 const store = configureStore(initialState);
 
-const rootElement = document.getElementById('root');
+const root = document.getElementById('root');
 
 const renderComponent = App => {
   if (env === 'development') {
@@ -22,14 +22,14 @@ const renderComponent = App => {
           <App />
         </Provider>
       </AppContainer>,
-      rootElement
+      root
     );
   } else {
     hydrate(
       <Provider store={store}>
         <App />
       </Provider>,
-      rootElement
+      root
     );
   }
 };

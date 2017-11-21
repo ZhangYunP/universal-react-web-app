@@ -1,11 +1,13 @@
 import 'isomorphic-fetch';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { TweenLite } from 'gsap';
-import { asyncFetchDataActionCreator } from '../../redux/modules/asyncFetchData';
+import * as ActionTypes from '../../constants';
+import fetchApiSaga from '../../redux/sagas';
 import { counterActionCreator } from '../../redux/modules/counter';
+import { startFetch } from '../../redux/modules/asyncFetchData';
 import { switchCounterTypeActionCreator } from '../../redux/modules/switchCounterType';
 import { ensureNumberActionCreator } from '../../redux/modules/ensureNumber';
 import './home.css';
@@ -16,21 +18,22 @@ const calcMethods = {
   TIMES: '*',
   DIVIDE: '/'
 };
+
 const methods = Object.keys(calcMethods);
 
-class Home extends Component {
+class Home extends PureComponent {
   constructor(props) {
     super(props);
     this.activeBtn = this.activeBtn.bind(this);
     this.scrollTop = this.scrollTop.bind(this);
   }
 
-  static fetchdata(store) {
-    return store.dispatch(asyncFetchDataActionCreator());
+  static componentWillFetch() {
+    return fetchApiSaga;
   }
 
   componentDidMount() {
-    this.props.fetchdata();
+    // this.props.startFetch();
   }
 
   handleNumberChange(e, isFirst) {
@@ -41,9 +44,9 @@ class Home extends Component {
   }
 
   activeBtn(e) {
-    const { switchtype } = this.props;
+    const { SWITCH_TYPE } = this.props;
     const btnType = e.target.value;
-    switchtype(btnType);
+    SWITCH_TYPE(btnType);
   }
 
   scrollTop() {
@@ -51,6 +54,7 @@ class Home extends Component {
   }
 
   render() {
+    console.log('home rendered');
     const {
       count,
       calc,
@@ -111,11 +115,11 @@ Home.propTypes = {
   count: PropTypes.number.isRequired,
   calc: PropTypes.func.isRequired,
   ensurenum: PropTypes.func.isRequired,
-  switchtype: PropTypes.func.isRequired,
+  SWITCH_TYPE: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
   number1: PropTypes.number.isRequired,
   number2: PropTypes.number.isRequired,
-  data: PropTypes.object.isRequired
+  data: PropTypes.object
 };
 
 Home.defaultProps = {
@@ -135,10 +139,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     ...bindActionCreators({
-      fetchdata: asyncFetchDataActionCreator,
+      startFetch,
       calc: counterActionCreator,
       ensurenum: ensureNumberActionCreator,
-      switchtype: switchCounterTypeActionCreator
+      SWITCH_TYPE: switchCounterTypeActionCreator
     }, dispatch)
   };
 }

@@ -1,19 +1,15 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-const NotFound = () => {
+const Status = ({ status, children }) => {
   return (
     <Route render={({ staticContext }) => {
       if (staticContext) {
-        staticContext.status = 404;
+        staticContext.status = status;
       }
-      return (
-        <div>
-          <h1>404 : Not Found</h1>
-        </div>
-      );
+      return children;
     }}/>
   );
 };
 
-export default NotFound;
+export default Status;

@@ -1,6 +1,5 @@
 const createWebpackdevConfig = require('./webpack.dev.config').createWebpackdevConfig;
 const createWebpackprodConfig = require('./webpack.prod.config').createWebpackprodConfig;
-const hotEntry = require('../config').hotEntry;
 const vendors = require('../config').webpackVendors;
 const htmlWebpackPluginConfig = require('../config').htmlWebpackPluginConfig;
 const extractWebpackRuntime = require('../config').extractWebpackRuntime;
@@ -25,7 +24,7 @@ if (env === 'development') {
       htmlWebpackPluginConfig
     });
   } else {
-    webpackConfig = createWebpackdevConfig({}, false, hotEntry, {
+    webpackConfig = createWebpackdevConfig({}, false, true, {
       vendors,
       extractWebpackRuntime,
       htmlWebpackPluginConfig
